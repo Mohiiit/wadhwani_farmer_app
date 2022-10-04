@@ -1,3 +1,4 @@
 env
 .env
 project_farmer.db
+token.json

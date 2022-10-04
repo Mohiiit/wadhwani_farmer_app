@@ -13,7 +13,7 @@ from schema import schemas
 
 from service import service
 from db.database import SessionLocal, engine
-from util import deps
+from util import deps, translate
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -46,3 +46,11 @@ async def read_farmers(
 ):
     farmers = service.get_farmers(db, skip=skip, limit=limit)
     return farmers
+
+
+# @app.get("/farmers/{lang}", response_model=list[schemas.FarmerBase])
+# async def read_farmers_lang(
+#     lang: str,
+#     db: Session = Depends(deps.get_db),
+# ):
+
