@@ -29,5 +29,9 @@ def get_farmer(db: Session, phone_number: str):
     )
 
 
-def get_farmers(db: Session, skip: int = 0, limit: int = 100):
+def get_farmers(db: Session, skip: int = 0, limit: int = 4):
     return db.query(models.Farmer).offset(skip).limit(limit).all()
+
+
+def get_farmers_all(db: Session):
+    return db.query(models.Farmer).all()

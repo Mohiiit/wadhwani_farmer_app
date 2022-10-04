@@ -2,3 +2,7 @@ env
 .env
 project_farmer.db
 token.json
+test.csv
+.pytest_cache
+project_farmer_test.db
+.DS_Store

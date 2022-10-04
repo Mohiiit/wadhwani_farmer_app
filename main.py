@@ -20,11 +20,9 @@ app = FastAPI()
 
 
 @app.post("/upload")
-async def upload(
-    file: UploadFile = File(...), db: Session = Depends(deps.get_db)
-):
+async def upload(file: UploadFile = File(...), db: Session = Depends(deps.get_db)):
     csvReader = csv.DictReader(codecs.iterdecode(file.file, "utf-8"))
-    data = {}
+    data = {"files": "files added"}
     for rows in csvReader:
         db_farmer = schemas.FarmerBase(
             farmer_name=rows["farmer_name"],
@@ -40,27 +38,23 @@ async def upload(
 
 
 @app.get("/farmers/", response_model=list[schemas.FarmerBase])
-async def read_farmers(
-    skip: int = 0, limit: int = 100, db: Session = Depends(deps.get_db)
-):
-    farmers = service.get_farmers(db, skip=skip, limit=limit)
+async def read_farmers(db: Session = Depends(deps.get_db)):
+    farmers = service.get_farmers_all(db)
     return farmers
 
 
 @app.get("/farmers/{lang}", response_model=list[schemas.FarmerBase])
 async def read_farmers_lang(
-    lang: str,
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 4,
+    lang: str = "hi",
     db: Session = Depends(deps.get_db),
 ):
     farmers = service.get_farmers(db, skip=skip, limit=limit)
     for i in farmers:
         farmer_name = await translate.translate_text(i.farmer_name, lang)
         state_name = await translate.translate_text(i.state_name, lang)
-        district_name = await translate.translate_text(
-            i.district_name, lang
-        )
+        district_name = await translate.translate_text(i.district_name, lang)
         village_name = await translate.translate_text(i.village_name, lang)
 
         i.farmer_name = farmer_name["translatedText"]
