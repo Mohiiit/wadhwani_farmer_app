@@ -48,9 +48,30 @@ async def read_farmers(
     return farmers
 
 
-# @app.get("/farmers/{lang}", response_model=list[schemas.FarmerBase])
-# async def read_farmers_lang(
-#     lang: str,
-#     db: Session = Depends(deps.get_db),
-# ):
+@app.get("/farmers/{lang}", response_model=list[schemas.FarmerBase])
+async def read_farmers_lang(
+    lang: str, skip: int = 0, limit: int = 100,
+    db: Session = Depends(deps.get_db),
+):
+    farmers = service.get_farmers(db, skip=skip, limit=limit)
+    for i in farmers:
+        farmer_name = await translate.translate_text(i.farmer_name, lang)
+        state_name = await translate.translate_text(i.state_name, lang)
+        district_name = await translate.translate_text(i.district_name, lang)
+        village_name = await translate.translate_text(i.village_name, lang)
 
+        i.farmer_name = farmer_name['translatedText']
+        i.state_name = state_name['translatedText']
+        i.district_name = district_name['translatedText']
+        i.village_name = village_name['translatedText']
+
+    return farmers
+
+
+@app.get("/translate", response_model=str)
+async def translate_text(
+    lang: str,
+    text: str,
+):
+    translated_text = await translate.translate_text(text, lang)
+    return translated_text['translatedText']
