@@ -22,26 +22,27 @@ app = FastAPI()
 
 
 @app.post("/upload")
-async def upload(file: UploadFile = File(...),  db: Session = Depends(deps.get_db)):
-    csvReader = csv.DictReader(codecs.iterdecode(file.file, 'utf-8'))
+async def upload(file: UploadFile = File(...), db: Session = Depends(deps.get_db)):
+    csvReader = csv.DictReader(codecs.iterdecode(file.file, "utf-8"))
     data = {}
     for rows in csvReader:
-        print(rows)           
-        # crud.create_farmer(rows)
+        print(rows)
         db_farmer = schemas.FarmerBase(
-            farmer_name=rows["farmer_name"], 
+            farmer_name=rows["farmer_name"],
             state_name=rows["state_name"],
             district_name=rows["district_name"],
             village_name=rows["village_name"],
-            phone_number=rows["phone_number"]
+            phone_number=rows["phone_number"],
         )
-        service.create_farmer(db, db_farmer) 
-    
+        service.create_farmer(db, db_farmer)
+
     file.file.close()
     return data
 
 
 @app.get("/farmers/", response_model=list[schemas.FarmerBase])
-async def read_farmers(skip: int = 0, limit: int = 100, db: Session = Depends(deps.get_db)):
+async def read_farmers(
+    skip: int = 0, limit: int = 100, db: Session = Depends(deps.get_db)
+):
     farmers = service.get_farmers(db, skip=skip, limit=limit)
     return farmers
