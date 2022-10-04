@@ -1,8 +1,4 @@
-from typing import Union
-
 from pydantic import BaseModel
-
-from model.models import Farmer
 
 
 class FarmerBase(BaseModel):

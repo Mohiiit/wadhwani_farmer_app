@@ -1,6 +1,4 @@
-import string
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String
 
 from db.database import Base
 
@@ -12,4 +10,6 @@ class Farmer(Base):
     state_name = Column(String, nullable=True)
     district_name = Column(String, nullable=True)
     village_name = Column(String, nullable=True)
-    phone_number = Column(String, primary_key=True, index=True, nullable=False)
+    phone_number = Column(
+        String, primary_key=True, index=True, nullable=False
+    )

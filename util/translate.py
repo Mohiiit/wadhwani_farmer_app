@@ -1,7 +1,10 @@
 import os
 from google.cloud import translate_v2
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'/Users/mohitdhattarwal/Desktop/wadhwani_farmer_app/token.json'
+os.environ[
+    "GOOGLE_APPLICATION_CREDENTIALS"
+] = r"/Users/mohitdhattarwal/Desktop/wadhwani_farmer_app/token.json"
+
 
 async def translate_text(text, target):
     translate_client = translate_v2.Client()
