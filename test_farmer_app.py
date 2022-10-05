@@ -15,7 +15,9 @@ SQLALCHEMY_DATABASE_URL = "sqlite:///./project_farmer_test.db"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TestingSessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine
+)
 
 database.Base.metadata.create_all(bind=engine)
 
