@@ -20,6 +20,9 @@ class FarmerLogIn(FarmerBase):
     password: str
 
 
+class FarmerSignUp(FarmerExport):
+    password: str
+
 class FarmerCreate(FarmerExport):
     password: str
     disabled: Union[bool, None] = None

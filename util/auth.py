@@ -87,6 +87,8 @@ async def get_current_user(
 async def get_current_active_user(
     farmer: schemas.FarmerExport = Depends(get_current_user),
 ):
+    if not farmer:
+        raise HTTPException(status_code=400, detail="not the user")
     if farmer.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return farmer
