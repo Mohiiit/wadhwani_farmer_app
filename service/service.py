@@ -5,14 +5,15 @@ from schema import schemas
 from model import models
 
 
-def create_farmer(db: Session, farmer: schemas.FarmerCreate):
+def create_farmer(db: Session, farmer: schemas.FarmerSignUp):
     # fake_hashed_password = user.password + "notreallyhashed"
     db_farmer = models.Farmer(
         farmer_name=farmer.farmer_name,
         state_name=farmer.state_name,
         district_name=farmer.district_name,
         village_name=farmer.village_name,
-        phone_number=farmer.phone_number,
+        username=farmer.username,
+        password=farmer.password,
     )
 
     db.add(db_farmer)
@@ -21,12 +22,8 @@ def create_farmer(db: Session, farmer: schemas.FarmerCreate):
     return db_farmer
 
 
-def get_farmer(db: Session, phone_number: str):
-    return (
-        db.query(models.Farmer)
-        .filter(models.Farmer.phone_number == phone_number)
-        .first()
-    )
+def get_farmer(db: Session, username: str):
+    return db.query(models.Farmer).filter(models.Farmer.username == username).first()
 
 
 def get_farmers(db: Session, skip: int = 0, limit: int = 4):

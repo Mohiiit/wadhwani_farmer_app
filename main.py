@@ -1,22 +1,41 @@
-from fastapi import Depends, FastAPI, HTTPException, File, UploadFile
+from fastapi import Depends, FastAPI, HTTPException, File, UploadFile, status
 
 import csv
 import codecs
+from pydantic import BaseModel
+from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
+from jose import JWTError, jwt
 
 from sqlalchemy.orm import Session
 
 from model import models
 
 from schema import schemas
-
+import os
 from service import service
 from db.database import engine
 from util import deps, translate
+from dotenv import load_dotenv
 
+load_dotenv()
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+origins = {
+    "http://localhost",
+    "http://localhost:3000",
+}
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/upload")
@@ -29,7 +48,7 @@ async def upload(file: UploadFile = File(...), db: Session = Depends(deps.get_db
             state_name=rows["state_name"],
             district_name=rows["district_name"],
             village_name=rows["village_name"],
-            phone_number=rows["phone_number"],
+            username=rows["phone_number"],
         )
         service.create_farmer(db, db_farmer)
 
@@ -37,7 +56,7 @@ async def upload(file: UploadFile = File(...), db: Session = Depends(deps.get_db
     return data
 
 
-@app.get("/farmers/", response_model=list[schemas.FarmerBase])
+@app.get("/farmers/", response_model=list[schemas.Farmer])
 async def read_farmers(db: Session = Depends(deps.get_db)):
     farmers = service.get_farmers_all(db)
     return farmers
@@ -72,3 +91,50 @@ async def translate_text(
 ):
     translated_text = await translate.translate_text(text, lang)
     return translated_text["translatedText"]
+
+
+SECERT_KEY = os.getenv("SECERT_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRES_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRES_MINUTES")
+
+test_user = {
+    "username": "mohit",
+    "password": "something",
+}
+
+
+@app.post("/login")
+async def user_login(
+    loginitem: schemas.FarmerLogIn, db: Session = Depends(deps.get_db)
+):
+    data = jsonable_encoder(loginitem)
+    farmer = service.get_farmer(db, loginitem.username)
+    if not farmer:
+        raise HTTPException(
+            status_code=404,
+            detail="Farmer with this phone number doesn't exist, please signup",
+        )
+
+    if farmer.password == loginitem.password:
+        encoded_jwt = jwt.encode(data, SECERT_KEY, algorithm=ALGORITHM)
+        return {"token": encoded_jwt}
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail="Wrong password, please try again",
+        )
+
+
+@app.post("/signup", response_model=schemas.Farmer)
+async def user_signup(
+    signupitem: schemas.FarmerSignUp, db: Session = Depends(deps.get_db)
+):
+    farmer = service.get_farmer(db, signupitem.username)
+    if farmer:
+        raise HTTPException(
+            status_code=400,
+            detail="Farmer with this phone number already exists",
+        )
+
+    farmer = service.create_farmer(db, signupitem)
+    return farmer
