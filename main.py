@@ -164,3 +164,19 @@ async def read_users_me(
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     return farmer
+
+
+@app.patch("/update/{username}", response_model=schemas.FarmerExport)
+async def update_data(
+    username: str,
+    new_farmer: schemas.FarmerUpdate,
+    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user), db: Session = Depends(deps.get_db)
+):
+    if username != farmer.username:
+        raise HTTPException(status_code=400, detail="not the right user")
+    
+    if farmer.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+
+    return service.update_data(db, new_farmer, farmer)
+

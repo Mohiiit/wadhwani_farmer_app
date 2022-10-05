@@ -53,3 +53,18 @@ def get_farmers(db: Session, skip: int = 0, limit: int = 4):
 
 def get_farmers_all(db: Session):
     return db.query(models.Farmer).all()
+
+
+def update_data(db: Session, new_farmer: schemas.FarmerUpdate, curr_farmer: schemas.FarmerExport):
+    farmer_data = new_farmer.dict(exclude_unset=True)
+    for key, pair in farmer_data.items():
+        if pair!="string":
+            if key == "password":
+                setattr(curr_farmer, key, auth.get_password_hash(pair))
+            else:
+                setattr(curr_farmer, key, pair)
+
+    db.add(curr_farmer)
+    db.commit()
+    db.refresh(curr_farmer)
+    return curr_farmer
