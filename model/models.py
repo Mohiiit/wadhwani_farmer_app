@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, Boolean
 
 from db.database import Base
 
@@ -12,3 +12,4 @@ class Farmer(Base):
     village_name = Column(String, nullable=True)
     username = Column(String, primary_key=True, index=True, nullable=False)
     password = Column(String, nullable=True)
+    disabled = Column(Boolean)

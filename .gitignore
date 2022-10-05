@@ -6,3 +6,4 @@ test.csv
 .pytest_cache
 project_farmer_test.db
 .DS_Store
+.vscode
