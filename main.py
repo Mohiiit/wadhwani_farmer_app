@@ -37,19 +37,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-origins = {
-    "http://localhost",
-    "http://localhost:3000",
-}
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 
 @app.post("/upload")
 async def upload(
@@ -72,13 +59,13 @@ async def upload(
     return data
 
 
-@app.get("/farmers/", response_model=list[schemas.FarmerExport])
+@app.get("/farmers/", response_model=list[schemas.FarmerFinal])
 async def read_farmers(db: Session = Depends(deps.get_db),farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),):
     farmers = service.get_farmers_all(db)
     return farmers
 
 
-@app.get("/farmers/{lang}", response_model=list[schemas.FarmerExport])
+@app.get("/farmers/{lang}", response_model=list[schemas.FarmerFinal])
 async def read_farmers_lang(
     skip: int = 0,
     limit: int = 4,
@@ -87,7 +74,7 @@ async def read_farmers_lang(
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
 
-    farmers = service.get_farmers(db, skip=skip, limit=limit)
+    farmers = service.get_farmers_all(db)
     for i in farmers:
         farmer_name = await translate.translate_text(i.farmer_name, lang)
         state_name = await translate.translate_text(i.state_name, lang)
@@ -184,3 +171,6 @@ async def update_data(
 
     return service.update_data(db, new_farmer, farmer)
 
+@app.get("/health")
+async def check_health():
+    return {"message": "I am okay"}
