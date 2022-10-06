@@ -64,7 +64,7 @@ def update_data(
 ):
     farmer_data = new_farmer.dict(exclude_unset=True)
     for key, pair in farmer_data.items():
-        if pair != "string":
+        if pair != "string" and pair != "":
             if key == "password":
                 setattr(curr_farmer, key, auth.get_password_hash(pair))
             else:
