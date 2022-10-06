@@ -57,10 +57,14 @@ def get_farmers_all(db: Session):
     return db.query(models.Farmer).all()
 
 
-def update_data(db: Session, new_farmer: schemas.FarmerUpdate, curr_farmer: schemas.FarmerExport):
+def update_data(
+    db: Session,
+    new_farmer: schemas.FarmerUpdate,
+    curr_farmer: schemas.FarmerExport,
+):
     farmer_data = new_farmer.dict(exclude_unset=True)
     for key, pair in farmer_data.items():
-        if pair!="string":
+        if pair != "string":
             if key == "password":
                 setattr(curr_farmer, key, auth.get_password_hash(pair))
             else:

@@ -40,7 +40,8 @@ app = FastAPI()
 
 @app.post("/upload")
 async def upload(
-    file: UploadFile = File(...), db: Session = Depends(deps.get_db),
+    file: UploadFile = File(...),
+    db: Session = Depends(deps.get_db),
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     csvReader = csv.DictReader(codecs.iterdecode(file.file, "utf-8"))
@@ -60,7 +61,10 @@ async def upload(
 
 
 @app.get("/farmers/", response_model=list[schemas.FarmerFinal])
-async def read_farmers(db: Session = Depends(deps.get_db),farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),):
+async def read_farmers(
+    db: Session = Depends(deps.get_db),
+    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
+):
     farmers = service.get_farmers_all(db)
     return farmers
 
@@ -161,15 +165,17 @@ async def read_users_me(
 async def update_data(
     username: str,
     new_farmer: schemas.FarmerUpdate,
-    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user), db: Session = Depends(deps.get_db)
+    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
+    db: Session = Depends(deps.get_db),
 ):
     if username != farmer.username:
         raise HTTPException(status_code=400, detail="not the right user")
-    
+
     if farmer.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
 
     return service.update_data(db, new_farmer, farmer)
+
 
 @app.get("/health")
 async def check_health():

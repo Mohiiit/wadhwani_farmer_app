@@ -35,12 +35,14 @@ def override_get_db():
     db.rollback()
     connection.close()
 
+
 app.dependency_overrides[deps.get_db] = override_get_db
 
 client = TestClient(app)
 
+
 def test_auth():
-    assert 2==2
+    assert 2 == 2
 
 
 def test_login_when_user_does_not_exist():
@@ -52,7 +54,9 @@ def test_login_when_user_does_not_exist():
     assert response.status_code == 401
 
 
-def test_login_when_user_submit_wrong_password(db: Session = Depends(override_get_db)):
+def test_login_when_user_submit_wrong_password(
+    db: Session = Depends(override_get_db),
+):
     new_farmer = schemas.FarmerSignUp(
         farmer_name="test",
         state_name="test",
@@ -61,11 +65,13 @@ def test_login_when_user_submit_wrong_password(db: Session = Depends(override_ge
         username="test",
         password="test",
     )
-    service.create_farmer(db ,new_farmer)
+    service.create_farmer(db, new_farmer)
     data = schemas.FarmerLogIn(
         username="test",
         password="nottest",
     )
     response = client.post("/login", data)
     assert response.status_code == 401
+
+
 # def test_wrong_login()
