@@ -53,7 +53,8 @@ app.add_middleware(
 
 @app.post("/upload")
 async def upload(
-    file: UploadFile = File(...), db: Session = Depends(deps.get_db)
+    file: UploadFile = File(...), db: Session = Depends(deps.get_db),
+    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     csvReader = csv.DictReader(codecs.iterdecode(file.file, "utf-8"))
     data = {"files": "files added"}
@@ -72,7 +73,7 @@ async def upload(
 
 
 @app.get("/farmers/", response_model=list[schemas.FarmerExport])
-async def read_farmers(db: Session = Depends(deps.get_db)):
+async def read_farmers(db: Session = Depends(deps.get_db),farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),):
     farmers = service.get_farmers_all(db)
     return farmers
 
@@ -83,7 +84,9 @@ async def read_farmers_lang(
     limit: int = 4,
     lang: str = "hi",
     db: Session = Depends(deps.get_db),
+    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
+
     farmers = service.get_farmers(db, skip=skip, limit=limit)
     for i in farmers:
         farmer_name = await translate.translate_text(i.farmer_name, lang)
@@ -105,6 +108,7 @@ async def read_farmers_lang(
 async def translate_text(
     lang: str = "hi",
     text: str = "test",
+    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     translated_text = await translate.translate_text(text, lang)
     return translated_text["translatedText"]
@@ -146,7 +150,7 @@ async def user_login(
 
 @app.post("/signup", response_model=schemas.FarmerExport)
 async def user_signup(
-    signupitem: schemas.FarmerExport, db: Session = Depends(deps.get_db)
+    signupitem: schemas.FarmerSignUp, db: Session = Depends(deps.get_db)
 ):
     farmer = service.get_farmer(db, signupitem.username)
     if farmer:
@@ -164,3 +168,19 @@ async def read_users_me(
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     return farmer
+
+
+@app.patch("/update/{username}", response_model=schemas.FarmerExport)
+async def update_data(
+    username: str,
+    new_farmer: schemas.FarmerUpdate,
+    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user), db: Session = Depends(deps.get_db)
+):
+    if username != farmer.username:
+        raise HTTPException(status_code=400, detail="not the right user")
+    
+    if farmer.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+
+    return service.update_data(db, new_farmer, farmer)
+
