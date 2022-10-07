@@ -3,6 +3,9 @@
 
 The application will allow the users to fetch the data in their desired language after they are authenticated.
 
+- Fronted code link: https://github.com/Mohiiit/farmer_app_frontend
+- API documentation can be found at http://localhost:8000/docs#/ after starting the app.
+
 ## Assumptions Made
 
 - There would be no commas in the farmer data.
