@@ -15,10 +15,11 @@ class FarmerExport(FarmerBase):
     class Config:
         orm_mode = True
 
+class FarmerFinal(FarmerExport):
+    phone_number: str
 
 class FarmerLogIn(FarmerBase):
     password: str
-
 
 class FarmerSignUp(FarmerExport):
     password: str
@@ -33,7 +34,6 @@ class FarmerUpdate(BaseModel):
     district_name: Optional[str] = None
     village_name: Optional[str] = None
     password: Optional[str] = None
-
 
 class Token(BaseModel):
     access_token: str

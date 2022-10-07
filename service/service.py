@@ -5,13 +5,14 @@ from util import auth
 from model import models
 
 
-def create_farmer(db: Session, farmer: schemas.FarmerExport):
+def create_farmer(db: Session, farmer: schemas.FarmerSignUp):
     db_farmer = models.Farmer(
         farmer_name=farmer.farmer_name,
         state_name=farmer.state_name,
         district_name=farmer.district_name,
         village_name=farmer.village_name,
         username=farmer.username,
+        phone_number=farmer.username,
         password=auth.get_password_hash(farmer.password),
         disabled=False,
     )
@@ -29,6 +30,7 @@ def create_farmer_csv(db: Session, farmer: schemas.FarmerExport):
         district_name=farmer.district_name,
         village_name=farmer.village_name,
         username=farmer.username,
+        phone_number=farmer.username,
         disabled=False,
         password=auth.get_password_hash(farmer.username),
     )
