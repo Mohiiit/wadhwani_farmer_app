@@ -60,7 +60,7 @@ async def upload(
     return data
 
 
-@app.get("/farmers/", response_model=list[schemas.FarmerFinal])
+@app.get("/farmers", response_model=list[schemas.FarmerFinal])
 async def read_farmers(
     db: Session = Depends(deps.get_db),
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
@@ -154,7 +154,7 @@ async def user_signup(
     return farmer
 
 
-@app.get("/users/me/", response_model=schemas.FarmerExport)
+@app.get("/users/me", response_model=schemas.FarmerExport)
 async def read_users_me(
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
