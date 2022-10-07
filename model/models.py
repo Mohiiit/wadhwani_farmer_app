@@ -11,7 +11,6 @@ class Farmer(Base):
     state_name = Column(String, nullable=True)
     district_name = Column(String, nullable=True)
     village_name = Column(String, nullable=True)
-    username = Column(String, primary_key=True, index=True, nullable=False)
     password = Column(String, nullable=True)
     disabled = Column(Boolean)
     phone_number = Column(String, nullable=False)

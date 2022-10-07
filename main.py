@@ -116,13 +116,20 @@ async def user_login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(deps.get_db),
 ):
+    farmer = service.get_farmer(db, form_data.username)
+    if not farmer:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Your details doesn't exist, please signup first",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) 
     farmer = auth.authenticate_user(
         db, form_data.username, form_data.password
     )
     if not farmer:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Wrong Password, If you are trying for first time, password is your phone-number.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(
@@ -154,7 +161,7 @@ async def user_signup(
     return farmer
 
 
-@app.get("/users/me", response_model=schemas.FarmerExport)
+@app.get("/me", response_model=schemas.FarmerExport)
 async def read_users_me(
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
@@ -169,10 +176,10 @@ async def update_data(
     db: Session = Depends(deps.get_db),
 ):
     if username != farmer.username:
-        raise HTTPException(status_code=400, detail="not the right user")
+        raise HTTPException(status_code=401, detail=f"You are allowed to make changes for {farmer.username} but you requested for {username}")
 
     if farmer.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=401, detail="Inactive user")
 
     return service.update_data(db, new_farmer, farmer)
 
