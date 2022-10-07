@@ -1,26 +1,125 @@
-# wadhwani_farmer_app
 
-## Installation
-Steps to follow to run the code:
+# Farmer App
 
-1) Clone the repo
-2) Make sure to have python on the system, here are commands to install: 
-    i) [ubuntu](https://phoenixnap.com/kb/how-to-install-python-3-ubuntu)
-    ii) [mac](https://www.scaler.com/topics/python/how-to-install-python-on-macos/)
-    ii) [windows](https://www.digitalocean.com/community/tutorials/install-python-windows-10)
-3) Go to the parent directory and start a virutal environment, command is: ```$ python -m venv env```
-4) Then activate the virtual environment using: 
-     i) ubuntu or mac: ```$ source ./env/bin/activate```
-     ii) windows:
-         a) Git Bash: ```$ source ./env/Scripts/activate```
-         b) PowerShell: ```$ .\env\Scripts\Activate.ps1```
-5) To make sure that the terminal is picking the right python run:
-     i) ubuntu or mac: ```$ which python```
-     ii) windows (PowerShell): ```$ Get-Command python```
-   It should return something like `/home/user/code/apiapp/env/bin/python`
-6) Now install all the requirements listed in `requirements.txt` using command: ```$ pip install -r requirements.txt```
-7) To make sure again that we have right python run:
-     i) ubuntu or mac: ```$ which uvicorn```
-     ii) windows: ```$ Get-Command python```
-   It should return the same result as before `/home/user/code/apiapp/env/bin/python`
-8) Run the file using command ```$ uvicorn app.main:app --reload```
+The application will allow the users to fetch the data in their desired language after they are authenticated.
+
+## Assumptions Made
+
+- There would be no commas in the farmer data.
+- If X add data of Y using csv upload method then password for Y would be their phone number.
+
+
+
+
+## Run Locally
+
+### Clone the project
+
+```bash
+  git clone https://github.com/Mohiiit/wadhwani_farmer_app.git
+```
+
+### Go to the project directory
+
+```bash
+  cd wadhwani_farmer_app
+```
+
+### Make a virutal environment
+
+```bash
+  python -m venv env
+```
+
+### Activate the virtual environment
+
+In mac or ubuntu using: 
+
+```bash
+  source ./env/bin/activate
+```
+
+In windows Git Bash: 
+
+```bash
+  source ./env/Scripts/activate
+```
+
+In windows PowerShell: 
+
+```bash
+  .\env\Scripts\Activate.ps1
+```
+
+### Make sure virtual environment is active 
+
+In mac or ubuntu using: 
+
+```bash
+  source ./env/bin/activate
+```
+
+In windows(PowerShell): 
+
+```bash
+  Get-Command python
+```
+
+It should return something like:
+```bash
+/path/to/project/wadhwani_farmer_app/env/bin/python
+```
+
+### Install Project Requirements
+
+Install project requirements using command: 
+```bash
+  pip install -r requirements.txt
+```
+
+
+### Environment Variables
+
+To run this project, following environment variables needs to be added in .env file:
+
+`SECERT_KEY = "YOUR_FAST_API_SECRET_KEY"`
+
+`ALGORITHM ="YOUR_ALGORITHM"`
+
+`ACCESS_TOKEN_EXPIRES_MINUTES = "TIME_IN_SECONDS"`
+
+You can copy it from `env_structure.txt`
+
+
+### Token for Google translate Api
+
+In order to access the google api, file named `token.json` with valid token needs to be added in the project directory.
+
+### Launch App
+
+Run the command to start project locally: 
+
+```bash
+  uvicorn app.main:app --reload
+```
+
+### Api Docs
+
+Go to localhost for the api documentation:
+```bash
+  http://localhost:8000/docs#/
+```
+
+## Running Tests
+
+### Before running tests
+
+Add a file named `test.csv` in project directory.
+
+### Run tests
+
+Run tests using command:
+```bash
+  pytest
+```
+
