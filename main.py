@@ -95,14 +95,14 @@ async def read_farmers_lang(
     return farmers
 
 
-@app.get("/translate", response_model=str)
+@app.get("/translate")
 async def translate_text(
     lang: str = "hi",
     text: str = "test",
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     translated_text = await translate.translate_text(text, lang)
-    return translated_text["translatedText"]
+    return {"translated_text": translated_text["translatedText"]}
 
 
 SECERT_KEY = os.getenv("SECERT_KEY")

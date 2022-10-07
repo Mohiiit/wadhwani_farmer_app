@@ -8,6 +8,26 @@ def test_password_hash_functions():
     assert verify_password("testindg", hashed_password) == False
 
 
+def test_google_translate_api_when_user_logged_in(client, token_headers):
+    data = {
+        "lang": "hi",
+        "text": "test"
+    }
+    response = client.get("/translate", data=data)
+    assert response.status_code == 200
+    assert response.json() == {"translated_text": "परीक्षण"}
+
+
+def test_google_translate_api_when_user_logged_in(client):
+    data = {
+        "lang": "hi",
+        "text": "test"
+    }
+    response = client.get("/translate", data=data)
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Not authenticated"}
+
+
 def test_health_endpoint_before_login(client):
     response = client.get("/health")
     assert response.status_code == 200
