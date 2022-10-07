@@ -8,7 +8,9 @@ Steps to follow to run the code:
     i) [ubuntu](https://phoenixnap.com/kb/how-to-install-python-3-ubuntu)
     ii) [mac](https://www.scaler.com/topics/python/how-to-install-python-on-macos/)
     ii) [windows](https://www.digitalocean.com/community/tutorials/install-python-windows-10)
-3) Go to the parent directory and start a virutal environment, command is: ```$ python -m venv env```
+3) Go to the parent directory and start a virutal environment, command is: 
+```bash
+$ python -m venv env```
 4) Then activate the virtual environment using: 
      i) ubuntu or mac: ```$ source ./env/bin/activate```
      ii) windows:
