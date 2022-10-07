@@ -40,7 +40,8 @@ app = FastAPI()
 
 @app.post("/upload")
 async def upload(
-    file: UploadFile = File(...), db: Session = Depends(deps.get_db),
+    file: UploadFile = File(...),
+    db: Session = Depends(deps.get_db),
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     csvReader = csv.DictReader(codecs.iterdecode(file.file, "utf-8"))
@@ -59,8 +60,11 @@ async def upload(
     return data
 
 
-@app.get("/farmers/", response_model=list[schemas.FarmerFinal])
-async def read_farmers(db: Session = Depends(deps.get_db),farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),):
+@app.get("/farmers", response_model=list[schemas.FarmerFinal])
+async def read_farmers(
+    db: Session = Depends(deps.get_db),
+    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
+):
     farmers = service.get_farmers_all(db)
     return farmers
 
@@ -76,29 +80,24 @@ async def read_farmers_lang(
 
     farmers = service.get_farmers_all(db)
     for i in farmers:
-        farmer_name = await translate.translate_text(i.farmer_name, lang)
-        state_name = await translate.translate_text(i.state_name, lang)
-        district_name = await translate.translate_text(
-            i.district_name, lang
-        )
-        village_name = await translate.translate_text(i.village_name, lang)
+        translated_data = await translate.join_farmer_data(i, lang)
 
-        i.farmer_name = farmer_name["translatedText"]
-        i.state_name = state_name["translatedText"]
-        i.district_name = district_name["translatedText"]
-        i.village_name = village_name["translatedText"]
+        i.farmer_name = translated_data[0]
+        i.state_name = translated_data[1]
+        i.district_name = translated_data[2]
+        i.village_name = translated_data[3]
 
     return farmers
 
 
-@app.get("/translate", response_model=str)
+@app.get("/translate")
 async def translate_text(
     lang: str = "hi",
     text: str = "test",
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     translated_text = await translate.translate_text(text, lang)
-    return translated_text["translatedText"]
+    return {"translated_text": translated_text["translatedText"]}
 
 
 SECERT_KEY = os.getenv("SECERT_KEY")
@@ -112,13 +111,20 @@ async def user_login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(deps.get_db),
 ):
+    farmer = service.get_farmer(db, form_data.username)
+    if not farmer:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Your details doesn't exist, please signup first",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     farmer = auth.authenticate_user(
         db, form_data.username, form_data.password
     )
     if not farmer:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Wrong Password, If you are trying for first time, password is your phone-number.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(
@@ -150,7 +156,7 @@ async def user_signup(
     return farmer
 
 
-@app.get("/users/me/", response_model=schemas.FarmerExport)
+@app.get("/me", response_model=schemas.FarmerExport)
 async def read_users_me(
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
@@ -161,15 +167,20 @@ async def read_users_me(
 async def update_data(
     username: str,
     new_farmer: schemas.FarmerUpdate,
-    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user), db: Session = Depends(deps.get_db)
+    farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
+    db: Session = Depends(deps.get_db),
 ):
     if username != farmer.username:
-        raise HTTPException(status_code=400, detail="not the right user")
-    
+        raise HTTPException(
+            status_code=401,
+            detail=f"You are allowed to make changes for {farmer.username} but you requested for {username}",
+        )
+
     if farmer.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=401, detail="Inactive user")
 
     return service.update_data(db, new_farmer, farmer)
+
 
 @app.get("/health")
 async def check_health():

@@ -8,3 +8,5 @@ project_farmer_test.db
 .DS_Store
 .vscode
 project_farmer_auth_test.db
+test.db
+.coverage

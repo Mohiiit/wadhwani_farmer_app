@@ -35,10 +35,15 @@ def create_farmer_csv(db: Session, farmer: schemas.FarmerExport):
         password=auth.get_password_hash(farmer.username),
     )
 
-    db.add(db_farmer)
-    db.commit()
-    db.refresh(db_farmer)
-    return db_farmer
+    curr_farmer = get_farmer(db, db_farmer.username)
+
+    if not curr_farmer:
+        db.add(db_farmer)
+        db.commit()
+        db.refresh(db_farmer)
+        return db_farmer
+
+    return curr_farmer
 
 
 def get_farmer(db: Session, username: str):
@@ -57,10 +62,14 @@ def get_farmers_all(db: Session):
     return db.query(models.Farmer).all()
 
 
-def update_data(db: Session, new_farmer: schemas.FarmerUpdate, curr_farmer: schemas.FarmerExport):
+def update_data(
+    db: Session,
+    new_farmer: schemas.FarmerUpdate,
+    curr_farmer: schemas.FarmerExport,
+):
     farmer_data = new_farmer.dict(exclude_unset=True)
     for key, pair in farmer_data.items():
-        if pair!="string":
+        if pair != "string" and pair != "":
             if key == "password":
                 setattr(curr_farmer, key, auth.get_password_hash(pair))
             else:
