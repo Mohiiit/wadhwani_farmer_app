@@ -9,20 +9,14 @@ def test_password_hash_functions():
 
 
 def test_google_translate_api_when_user_logged_in(client, token_headers):
-    data = {
-        "lang": "hi",
-        "text": "test"
-    }
+    data = {"lang": "hi", "text": "test"}
     response = client.get("/translate", data=data)
     assert response.status_code == 200
     assert response.json() == {"translated_text": "परीक्षण"}
 
 
 def test_google_translate_api_when_user_logged_in(client):
-    data = {
-        "lang": "hi",
-        "text": "test"
-    }
+    data = {"lang": "hi", "text": "test"}
     response = client.get("/translate", data=data)
     assert response.status_code == 401
     assert response.json() == {"detail": "Not authenticated"}
@@ -53,7 +47,7 @@ def test_me_endpoint_after_login(client, token_headers):
     assert response.json()["farmer_name"] == "test"
     assert response.json()["state_name"] == "test"
     assert response.json()["district_name"] == "test"
-    assert response.json()["village_name"] == "test" 
+    assert response.json()["village_name"] == "test"
 
 
 def test_login_when_user_does_not_exist(client):
@@ -63,7 +57,9 @@ def test_login_when_user_does_not_exist(client):
     }
     response = client.post("/login", data=data)
     assert response.status_code == 401
-    assert response.json() == {"detail": "Your details doesn't exist, please signup first"}
+    assert response.json() == {
+        "detail": "Your details doesn't exist, please signup first"
+    }
 
 
 def test_login_with_correct_credentials(client, token_headers):
@@ -84,7 +80,9 @@ def test_login_with_wrong_password(client, token_headers):
     }
     response = client.post("/login", data=data)
     assert response.status_code == 401
-    assert response.json() == {"detail": "Wrong Password, If you are trying for first time, password is your phone-number."}
+    assert response.json() == {
+        "detail": "Wrong Password, If you are trying for first time, password is your phone-number."
+    }
 
 
 def test_signup_with_username_already_exists(client, token_headers):
@@ -98,4 +96,6 @@ def test_signup_with_username_already_exists(client, token_headers):
     }
     response = client.post("/signup", json.dumps(new_farmer))
     assert response.status_code == 400
-    assert response.json() == {"detail": "Farmer with this phone number already exists"}
+    assert response.json() == {
+        "detail": "Farmer with this phone number already exists"
+    }

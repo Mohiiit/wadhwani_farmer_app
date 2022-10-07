@@ -21,7 +21,6 @@ def create_farmer(db: Session, farmer: schemas.FarmerSignUp):
     db.commit()
     db.refresh(db_farmer)
     return db_farmer
-    
 
 
 def create_farmer_csv(db: Session, farmer: schemas.FarmerExport):
@@ -43,8 +42,9 @@ def create_farmer_csv(db: Session, farmer: schemas.FarmerExport):
         db.commit()
         db.refresh(db_farmer)
         return db_farmer
-    
+
     return curr_farmer
+
 
 def get_farmer(db: Session, username: str):
     return (

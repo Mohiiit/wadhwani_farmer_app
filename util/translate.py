@@ -12,7 +12,15 @@ async def translate_text(text, target):
 
 
 async def join_farmer_data(farmer: schemas.FarmerExport, lang: str):
-    joined_data = str(farmer.farmer_name + "," + farmer.state_name + "," + farmer.district_name + "," + farmer.village_name)
+    joined_data = str(
+        farmer.farmer_name
+        + ","
+        + farmer.state_name
+        + ","
+        + farmer.district_name
+        + ","
+        + farmer.village_name
+    )
     output = await translate_text(joined_data, lang)
     output = output["translatedText"]
     translated_data = output.split(",")

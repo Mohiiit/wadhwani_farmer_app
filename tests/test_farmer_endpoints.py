@@ -1,6 +1,7 @@
 import json
 from util import translate
 
+
 def test_upload_csv_when_user_is_not_logged_in(client):
     test_file = {"file": open("./test.csv", "rb")}
     response = client.post("/upload", files=test_file)
@@ -21,7 +22,9 @@ def test_get_farmers_endpoint_without_user_login(client):
     assert response.json() == {"detail": "Not authenticated"}
 
 
-def test_get_farmers_endpoint_when_user_is_logged_in(client, token_headers):
+def test_get_farmers_endpoint_when_user_is_logged_in(
+    client, token_headers
+):
     response = client.get("/farmers")
     assert response.status_code == 200
     assert response.json()[0]["username"] == "test"

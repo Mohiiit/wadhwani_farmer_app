@@ -117,7 +117,7 @@ async def user_login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Your details doesn't exist, please signup first",
             headers={"WWW-Authenticate": "Bearer"},
-        ) 
+        )
     farmer = auth.authenticate_user(
         db, form_data.username, form_data.password
     )
@@ -171,7 +171,10 @@ async def update_data(
     db: Session = Depends(deps.get_db),
 ):
     if username != farmer.username:
-        raise HTTPException(status_code=401, detail=f"You are allowed to make changes for {farmer.username} but you requested for {username}")
+        raise HTTPException(
+            status_code=401,
+            detail=f"You are allowed to make changes for {farmer.username} but you requested for {username}",
+        )
 
     if farmer.disabled:
         raise HTTPException(status_code=401, detail="Inactive user")
