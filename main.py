@@ -80,17 +80,12 @@ async def read_farmers_lang(
 
     farmers = service.get_farmers_all(db)
     for i in farmers:
-        farmer_name = await translate.translate_text(i.farmer_name, lang)
-        state_name = await translate.translate_text(i.state_name, lang)
-        district_name = await translate.translate_text(
-            i.district_name, lang
-        )
-        village_name = await translate.translate_text(i.village_name, lang)
+        translated_data = await translate.join_farmer_data(i, lang)
 
-        i.farmer_name = farmer_name["translatedText"]
-        i.state_name = state_name["translatedText"]
-        i.district_name = district_name["translatedText"]
-        i.village_name = village_name["translatedText"]
+        i.farmer_name = translated_data[0]
+        i.state_name = translated_data[1]
+        i.district_name = translated_data[2]
+        i.village_name = translated_data[3]
 
     return farmers
 
