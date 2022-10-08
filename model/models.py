@@ -12,5 +12,4 @@ class Farmer(Base):
     district_name = Column(String, nullable=True)
     village_name = Column(String, nullable=True)
     password = Column(String, nullable=True)
-    disabled = Column(Boolean)
     phone_number = Column(String, nullable=False)

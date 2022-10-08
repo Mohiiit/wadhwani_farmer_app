@@ -14,7 +14,6 @@ def create_farmer(db: Session, farmer: schemas.FarmerSignUp):
         username=farmer.username,
         phone_number=farmer.username,
         password=auth.get_password_hash(farmer.password),
-        disabled=False,
     )
 
     db.add(db_farmer)
@@ -31,7 +30,6 @@ def create_farmer_csv(db: Session, farmer: schemas.FarmerExport):
         village_name=farmer.village_name,
         username=farmer.username,
         phone_number=farmer.username,
-        disabled=False,
         password=auth.get_password_hash(farmer.username),
     )
 

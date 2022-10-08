@@ -30,7 +30,6 @@ class FarmerSignUp(FarmerExport):
 
 class FarmerCreate(FarmerExport):
     password: str
-    disabled: Union[bool, None] = None
 
 
 class FarmerUpdate(BaseModel):
