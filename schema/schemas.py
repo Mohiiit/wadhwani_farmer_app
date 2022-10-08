@@ -44,3 +44,8 @@ class FarmerUpdate(BaseModel):
 class Token(BaseModel):
     access_token: str
     access_token_type: str
+
+
+class Message(BaseModel):
+    status: str
+    detail: str
