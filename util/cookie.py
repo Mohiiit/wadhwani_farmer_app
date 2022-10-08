@@ -29,7 +29,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
     async def __call__(self, request: Request) -> Optional[str]:
         authorization: str = request.cookies.get(
             "access_token"
-        )  # changed to accept access token from httpOnly Cookie
+        )
 
         scheme, param = get_authorization_scheme_param(authorization)
         if not authorization or scheme.lower() != "bearer":
