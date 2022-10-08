@@ -4,14 +4,17 @@
 The application will allow the users to fetch the data in their desired language after they are authenticated.
 
 - Fronted code link: https://github.com/Mohiiit/farmer_app_frontend
-- API documentation can be found at http://localhost:8000/docs#/ after starting the app.
+- API documentation can be found at http://localhost:8000/docs#/ after starting the app or you can check [this](https://github.com/Mohiiit/wadhwani_farmer_app/blob/master/api-documentation.pdf).
 
 ## Assumptions Made
 
 - There would be no commas in the farmer data.
 - If X add data of Y using csv upload method then password for Y would be their phone number.
 
+## Tech Stack Used
 
+- FastAPI for backend
+- ReactJS for frontend
 
 
 ## Run Locally
