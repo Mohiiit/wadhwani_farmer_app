@@ -4,19 +4,14 @@ from typing import Union
 
 from db.database import engine
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import (
-    OAuth2PasswordBearer,
-    OAuth2PasswordRequestForm,
-)
+from fastapi import Depends, HTTPException, status
 from jose import JWTError, jwt
-from model import models
 from passlib.context import CryptContext
 from schema import schemas
 from service import service
 from sqlalchemy.orm import Session
 
-from util import deps, translate, cookie
+from util import deps, cookie
 
 load_dotenv()
 
