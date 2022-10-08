@@ -4,13 +4,23 @@ from schema import schemas
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"./token.json"
 
-
+# function to translate the text in the "target" language
 async def translate_text(text, target):
     translate_client = translate_v2.Client()
-    output = translate_client.translate(text, target_language=target)
+    language_dict = {
+        "Hindi": "hi",
+        "Marathi": "mr",
+        "Punjabi": "pu",
+        "Telugu": "te",
+        "English": "en",
+    }
+    output = translate_client.translate(
+        text, target_language=language_dict[target]
+    )
     return output
 
 
+# function to join the data of farmer in order to save multiple api calls
 async def join_farmer_data(farmer: schemas.FarmerExport, lang: str):
     joined_data = str(
         farmer.farmer_name
