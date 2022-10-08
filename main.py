@@ -33,14 +33,14 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-@app.post("/upload")
-async def upload(
+@app.post("/upload", response_model=schemas.Message)
+async def upload_farmer_data_using_csv(
     file: UploadFile = File(...),
     db: Session = Depends(deps.get_db),
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     csvReader = csv.DictReader(codecs.iterdecode(file.file, "utf-8"))
-    data = {"message": "data added"}
+    
     for rows in csvReader:
         db_farmer = schemas.FarmerExport(
             farmer_name=rows["farmer_name"],
@@ -52,11 +52,15 @@ async def upload(
         service.create_farmer_csv(db, db_farmer)
 
     file.file.close()
+    data = {
+        "status": "ok",
+        "detail": "file uploaded"
+    }
     return data
 
 
 @app.get("/farmers", response_model=list[schemas.FarmerFinal])
-async def read_farmers(
+async def fetch_all_farmer_data(
     db: Session = Depends(deps.get_db),
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
@@ -65,9 +69,7 @@ async def read_farmers(
 
 
 @app.get("/farmers/{lang}", response_model=list[schemas.FarmerFinal])
-async def read_farmers_lang(
-    skip: int = 0,
-    limit: int = 4,
+async def fetch_farmer_data_in_given_language(
     lang: str = "hi",
     db: Session = Depends(deps.get_db),
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
@@ -85,14 +87,19 @@ async def read_farmers_lang(
     return farmers
 
 
-@app.get("/translate")
-async def translate_text(
+@app.get("/translate", response_model=schemas.Message)
+async def translate_the_given_text(
     lang: str = "hi",
     text: str = "test",
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     translated_text = await translate.translate_text(text, lang)
-    return {"translated_text": translated_text["translatedText"]}
+    translated_text = translated_text["translatedText"]
+    data = {
+        "status": "ok",
+        "detail": f"You translated text is {translated_text}"
+    }
+    return data;
 
 
 @app.post("/login", response_model=schemas.Token)
@@ -147,7 +154,7 @@ async def user_signup(
 
 
 @app.get("/me", response_model=schemas.FarmerExport)
-async def read_users_me(
+async def read_user_me(
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     return farmer
