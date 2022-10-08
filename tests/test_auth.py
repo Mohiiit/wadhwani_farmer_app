@@ -25,13 +25,13 @@ def test_google_translate_api_when_user_logged_in(client):
 def test_health_endpoint_before_login(client):
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"message": "I am okay"}
+    assert response.json() == {"message": "Farmer App"}
 
 
 def test_health_endpoint_after_login(client, token_headers):
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"message": "I am okay"}
+    assert response.json() == {"message": "Farmer App"}
 
 
 def test_me_endpoint_before_login(client):

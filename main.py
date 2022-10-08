@@ -1,5 +1,4 @@
-from pydoc import Helper
-from datetime import datetime, timedelta
+from datetime import timedelta
 from fastapi import (
     Depends,
     FastAPI,
@@ -9,15 +8,10 @@ from fastapi import (
     status,
 )
 from fastapi.security import (
-    OAuth2PasswordBearer,
     OAuth2PasswordRequestForm,
 )
 import csv
 import codecs
-from pydantic import BaseModel
-from fastapi.encoders import jsonable_encoder
-from fastapi.middleware.cors import CORSMiddleware
-from jose import JWTError, jwt
 from fastapi import Response
 
 from sqlalchemy.orm import Session
@@ -32,6 +26,7 @@ from util import deps, translate, auth
 from dotenv import load_dotenv
 
 load_dotenv()
+ACCESS_TOKEN_EXPIRES_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRES_MINUTES")
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -45,7 +40,7 @@ async def upload(
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
     csvReader = csv.DictReader(codecs.iterdecode(file.file, "utf-8"))
-    data = {"files": "files added"}
+    data = {"message": "data added"}
     for rows in csvReader:
         db_farmer = schemas.FarmerExport(
             farmer_name=rows["farmer_name"],
@@ -98,11 +93,6 @@ async def translate_text(
 ):
     translated_text = await translate.translate_text(text, lang)
     return {"translated_text": translated_text["translatedText"]}
-
-
-SECERT_KEY = os.getenv("SECERT_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRES_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRES_MINUTES")
 
 
 @app.post("/login", response_model=schemas.Token)
@@ -184,4 +174,4 @@ async def update_data(
 
 @app.get("/health")
 async def check_health():
-    return {"message": "I am okay"}
+    return {"message": "Farmer App"}
