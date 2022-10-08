@@ -15,8 +15,10 @@ def create_farmer(db: Session, farmer: schemas.FarmerSignUp):
         district_name=farmer.district_name,
         village_name=farmer.village_name,
         username=farmer.username,
-        phone_number=farmer.username, # phone number and username is same
-        password=auth.get_password_hash(farmer.password), # hashed password will be store in the backend
+        phone_number=farmer.username,  # phone number and username is same
+        password=auth.get_password_hash(
+            farmer.password
+        ),  # hashed password will be store in the backend
     )
 
     db.add(db_farmer)
@@ -37,7 +39,9 @@ def create_farmer_csv(db: Session, farmer: schemas.FarmerExport):
         village_name=farmer.village_name,
         username=farmer.username,
         phone_number=farmer.username,
-        password=auth.get_password_hash(farmer.username), # password is same as the phone number
+        password=auth.get_password_hash(
+            farmer.username
+        ),  # password is same as the phone number
     )
 
     # checking for duplicates
@@ -62,7 +66,7 @@ def get_farmer(db: Session, username: str):
     )
 
 
-# function will return the whole data 
+# function will return the whole data
 def get_farmers_all(db: Session):
     return db.query(models.Farmer).all()
 

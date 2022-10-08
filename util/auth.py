@@ -65,7 +65,7 @@ def create_access_token(
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
-    
+
     # updating the expire time in the data
     to_encode.update({"exp": expire})
 
@@ -98,19 +98,19 @@ async def get_current_user(
         # raising exception when no username is found
         if username is None:
             raise credentials_exception
-        
+
         # storing the username found
         found_username = schemas.FarmerBase(username=username)
     except JWTError:
         raise credentials_exception
-    
+
     # checking whether the "found-username" exist in the database or not
     farmer = service.get_farmer(db, username=found_username.username)
 
     # raising the exception when there is no farmer with "found-username"
     if farmer is None:
         raise credentials_exception
-    
+
     # returning farmer data if found the "found-username"
     return farmer
 

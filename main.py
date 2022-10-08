@@ -41,7 +41,7 @@ async def upload_farmer_data_using_csv(
 ):
     # reading the file
     csvReader = csv.DictReader(codecs.iterdecode(file.file, "utf-8"))
-    
+
     # iterating through every row
     for rows in csvReader:
         db_farmer = schemas.FarmerExport(
@@ -57,10 +57,7 @@ async def upload_farmer_data_using_csv(
     file.file.close()
 
     # returning the ok status after data added successfully
-    data = {
-        "status": "ok",
-        "detail": "file uploaded"
-    }
+    data = {"status": "ok", "detail": "file uploaded"}
     return data
 
 
@@ -115,7 +112,7 @@ async def translate_the_given_text(
     # returning ok status after successful translation
     data = {
         "status": "ok",
-        "detail": f"You translated text is {translated_text}"
+        "detail": f"You translated text is {translated_text}",
     }
     return data
 
@@ -138,7 +135,7 @@ async def user_login(
             detail="Your details doesn't exist, please signup first",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # if it exists, authenticate the farmer
     farmer = auth.authenticate_user(
         db, form_data.username, form_data.password
@@ -151,7 +148,7 @@ async def user_login(
             detail="Wrong Password, If you are trying for first time, password is your phone-number.",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # access token time limit
     access_token_expires = timedelta(
         minutes=int(ACCESS_TOKEN_EXPIRES_MINUTES)
@@ -164,7 +161,7 @@ async def user_login(
 
     # saving the token for future api calls
     response.set_cookie(key="access_token", value=f"Bearer {access_token}")
-    
+
     # returning the access token as response
     access_token = {
         "access_token": access_token,
@@ -215,7 +212,7 @@ async def update_data(
             status_code=401,
             detail=f"You are allowed to make changes for {farmer.username} but you requested for {username}",
         )
-    
+
     # update the data and return it
     return service.update_data(db, new_farmer, farmer)
 

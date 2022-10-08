@@ -14,7 +14,9 @@ async def translate_text(text, target):
         "Telugu": "te",
         "English": "en",
     }
-    output = translate_client.translate(text, target_language=language_dict[target])
+    output = translate_client.translate(
+        text, target_language=language_dict[target]
+    )
     return output
 
 
