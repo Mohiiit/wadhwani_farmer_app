@@ -75,9 +75,9 @@ async def fetch_all_farmer_data(
 
 
 # endpoint is created to fetch the data and then convert it to the desired language
-@app.get("/farmers/{lang}", response_model=list[schemas.FarmerFinal])
+@app.get("/farmers/{language}", response_model=list[schemas.FarmerFinal])
 async def fetch_farmer_data_in_given_language(
-    lang: str = "hi",
+    language: str = "Hindi",
     db: Session = Depends(deps.get_db),
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
@@ -88,7 +88,7 @@ async def fetch_farmer_data_in_given_language(
     # going through every row of data fetched
     for i in farmers:
         # combining the rows to translate it altogether
-        translated_data = await translate.join_farmer_data(i, lang)
+        translated_data = await translate.join_farmer_data(i, language)
 
         # changing the data to the translated data
         i.farmer_name = translated_data[0]
@@ -103,13 +103,13 @@ async def fetch_farmer_data_in_given_language(
 # endpoint to translate the given text in the given language
 @app.get("/translate", response_model=schemas.Message)
 async def translate_the_given_text(
-    lang: str = "hi",
+    language: str = "Hindi",
     text: str = "test",
     farmer: schemas.FarmerExport = Depends(auth.get_current_active_user),
 ):
 
     # calling the helper function to translate the text
-    translated_text = await translate.translate_text(text, lang)
+    translated_text = await translate.translate_text(text, language)
     translated_text = translated_text["translatedText"]
 
     # returning ok status after successful translation
